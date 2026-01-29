@@ -10,6 +10,8 @@ pipeline {
             steps {
                 //git branch: 'main', credentialsId: '<CREDS>', url: 'https://github.com/sumeetninawe/tf-tuts'
                  echo "Running tests in the ${params.TARGET_ACTION} environment."  
+                sh "infracost breakdown --path . --format json --out-file infracost-base.json"
+                sh "cat infracost-base.json"
             }
         }
         stage('Terraform init') {
