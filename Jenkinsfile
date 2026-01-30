@@ -32,6 +32,13 @@ pipeline {
             }
         }
 
+        stage('AWS CLI Check') {
+            steps {
+                sh 'aws sts get-caller-identity' // Verifica la identidad IAM
+                sh 'aws s3 ls' // Ejemplo: listar S3
+            }
+        }
+
         stage('Validate Terraform Installation') {
             steps {
                 script {
