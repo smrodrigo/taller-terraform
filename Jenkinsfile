@@ -3,7 +3,7 @@ pipeline {
 
 	environment {
         INFRACOST_API_KEY = credentials('INFRACOST_API_KEY')
-        AWS_REGION = 'us-east-1'
+        AWS_REGION = 'eu-south-2'
     }
 	
     parameters {  
