@@ -11,11 +11,6 @@ pipeline {
     }  
     
     stages {
-        stage('Inicializaing Job') {
-            steps {
-                cleanWs()
-            }
-        }
         stage('Calculating Cost') {
             steps {
                 echo "Running Infracost to calculate cost"  
@@ -80,6 +75,18 @@ pipeline {
                     }
                 }
             }
+        }
+    }
+	post {
+        always {
+            echo 'One way or another, I have finished'            
+        }
+        success {
+            echo 'I succeeded!'
+        }
+        failure {
+            echo 'I failed :('
+			cleanWs()
         }
     }
 }
