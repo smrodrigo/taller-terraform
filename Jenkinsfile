@@ -3,9 +3,7 @@ pipeline {
 
 	environment {
         INFRACOST_API_KEY = credentials('INFRACOST_API_KEY')
-        AWS_ACCESS_KEY_ID = credentials('aws-credentials')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-credentials')
-        AWS_REGION = 'eu-south-2'
+        AWS_REGION = 'us-east-1'
     }
 	
     parameters {  
@@ -24,21 +22,30 @@ pipeline {
             }
         }
 		
-        stage('Checkout Repository') {
+		stage('Checkout Repository') {
             steps {
                 script {
                     sh 'ls -lah'  // Verify repository checkout
                 }
             }
         }
-
         stage('AWS CLI Check') {
-            steps {
-                sh 'aws sts get-caller-identity' // Verifica la identidad IAM
-                sh 'aws s3 ls' // Ejemplo: listar S3
+            steps {			
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                    secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
+                    credentialsId: 'dev_user_aws_cli']]) 
+                    {
+                        script 
+                        {
+						sh 'aws sts get-caller-identity' // Verifica la identidad IAM
+						sh 'aws s3 ls' // Ejemplo: listar S3
+                        }
+                }
+                
             }
         }
-
         stage('Validate Terraform Installation') {
             steps {
                 script {
