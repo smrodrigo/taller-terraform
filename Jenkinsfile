@@ -58,7 +58,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 dir('terraform') {
-                    sh 'terraform plan -out=tfplan'
+                    sh 'terraform plan -out=infra.plan'
                 }
             }
         }
@@ -68,7 +68,7 @@ pipeline {
                 dir('terraform') {
                     script {
                         if (params.TARGET_ACTION == 'apply') {
-                            sh 'terraform apply -auto-approve tfplan'
+                            sh 'terraform apply -auto-approve infra.plan'
                         } else if (params.TARGET_ACTION == 'destroy') {
                             sh 'terraform destroy -auto-approve'
                         }
