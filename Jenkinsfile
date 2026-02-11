@@ -15,7 +15,7 @@ pipeline {
             steps {
                 echo "Running Infracost to calculate cost"  
 				sh "infracost configure set api_key ${INFRACOST_API_KEY}"
-                sh "infracost breakdown --path . --format json --out-file infracost-base.json"
+                sh "infracost breakdown --path . --format table --out-file infracost-base.md"
 				sh "cat infracost-base.json"
             }
         }
