@@ -11,24 +11,20 @@ pipeline {
     }  
     
     stages {
+        stage('Inicializaing Job') {
+            steps {
+                cleanWs()
+            }
+        }
         stage('Calculating Cost') {
             steps {
-                //git branch: 'main', credentialsId: '<CREDS>', url: 'https://github.com/sumeetninawe/tf-tuts'
-                 echo "Running tests in the ${params.TARGET_ACTION} environment."  
+                echo "Running Infracost to calculate cost"  
 				sh "infracost configure set api_key ${INFRACOST_API_KEY}"
-                sh "infracost breakdown --path . --format json --out-file infracost-base.json"                
-				//sh "infracost output --path infracost.json --format table --out-file infracost-base.md"
+                sh "infracost breakdown --path . --format json --out-file infracost-base.json"
 				sh "cat infracost-base.json"
             }
         }
 		
-		stage('Checkout Repository') {
-            steps {
-                script {
-                    sh 'ls -lah'  // Verify repository checkout
-                }
-            }
-        }
         stage('AWS CLI Check') {
             steps {			
                 withCredentials([[
@@ -37,15 +33,14 @@ pipeline {
                     secretKeyVariable: 'AWS_SECRET_ACCESS_KEY',
                     credentialsId: 'dev_user_aws_cli']]) 
                     {
-                        script 
-                        {
-						sh 'aws sts get-caller-identity' // Verifica la identidad IAM
-						sh 'aws s3 ls' // Ejemplo: listar S3
+                        script {
+    						sh 'aws sts get-caller-identity' // Verifica la identidad IAM
+    						sh 'aws s3 ls' // Ejemplo: listar S3
                         }
                 }
-                
             }
         }
+        
         stage('Validate Terraform Installation') {
             steps {
                 script {
@@ -73,19 +68,18 @@ pipeline {
             }
         }
 		
-	//	stage('Terraform Action') {
-    //        steps {
-    //            dir('terraform') {
-     //               script {
-     //                   if (params.ACTION == 'apply') {
-     //                       sh 'terraform apply -auto-approve tfplan'
-    //                    } else if (params.ACTION == 'destroy') {
-     //                       sh 'terraform destroy -auto-approve'
-     //                   }
-     //               }
-     //           }
-     //       }
-     //   }
-        
+		stage('Terraform Action') {
+            steps {
+                dir('terraform') {
+                    script {
+                        if (params.ACTION == 'apply') {
+                            sh 'terraform apply -auto-approve tfplan'
+                        } else if (params.ACTION == 'destroy') {
+                            sh 'terraform destroy -auto-approve'
+                        }
+                    }
+                }
+            }
+        }
     }
 }
