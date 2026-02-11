@@ -1,13 +1,17 @@
 pipeline {
     agent any
-
+	
+	options {
+		buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '10'))
+	}
+	
 	environment {
         INFRACOST_API_KEY = credentials('INFRACOST_API_KEY')
         AWS_REGION = 'us-east-1'
     }
 	
     parameters {  
-        choice(name: 'TARGET_ACTION', choices: ['Simulacion', 'apply', 'destroy'], description: 'Select the action')  
+        choice(name: 'TARGET_ACTION', choices: ['simulation', 'apply', 'destroy'], description: 'Select the action')  
     }  
     
     stages {
